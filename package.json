@@ -1,0 +1,20 @@
+{
+  "name": "devmatch",
+  "version": "1.0.0",
+  "description": "DevMatch is a professional platform designed to connect developers with complementary skills and goals. Whether you're seeking collaboration on projects, expanding your network, or looking for specialized expertise, DevMatch streamlines the process of finding the right developer matches based on your unique preferences and needs.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
+  },
+  "type": "module",
+  "keywords": [
+    "Developer",
+    "Matchmaking"
+  ],
+  "author": "Aman Sirohi",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.1"
+  }
+}
