@@ -29,6 +29,15 @@ app.post("/signup", async (req, res) => {
     res.send("signup successful");
 });
 
+app.get("/feed", async (req, res) => {
+    try {
+        const data = await User.find();
+        res.json(data);
+    } catch (error) {
+        console.error(error);
+        res.status(400).send("signup failed");
+    }
+});
 app.listen(3000, () => {
     console.log("Server is running on port 3000");
 });
