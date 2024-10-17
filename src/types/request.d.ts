@@ -1,5 +1,5 @@
 import { Session } from "express-session";
-import User from "../models/user";
+import User from "../models/user.js";
 import { Request } from "express";
 
 export interface AuthenticatedRequest extends Request {

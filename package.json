@@ -2,10 +2,10 @@
   "name": "devmatch",
   "version": "1.0.0",
   "description": "DevMatch is a professional platform designed to connect developers with complementary skills and goals. Whether you're seeking collaboration on projects, expanding your network, or looking for specialized expertise, DevMatch streamlines the process of finding the right developer matches based on your unique preferences and needs.",
-  "main": "index.js",
+  "main": "src/index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon build/index.js",
+    "start": "npx tsc && node build/index.js",
     "dev": "nodemon"
   },
   "type": "module",
@@ -19,6 +19,7 @@
     "bcrypt": "^5.1.1",
     "connect-mongo": "^5.1.0",
     "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
     "express-session": "^1.18.1",
@@ -28,6 +29,7 @@
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
+    "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/express-session": "^1.18.0",
     "@types/node": "^22.7.6",

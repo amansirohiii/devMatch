@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express";
-import { userAuth } from "../middlewares/auth";
+import { userAuth } from "../middlewares/auth.js";
 import { AuthenticatedRequest } from "../types/request";
 
 export const profileRouter = express.Router();

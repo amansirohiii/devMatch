@@ -1,18 +1,23 @@
 import express from "express";
 import { dbConnect } from "./config/dbConnect.js";
 import dotenv from "dotenv";
-import User from "./models/user";
+import User from "./models/user.js";
 import session from "express-session";
 import MongoStore from "connect-mongo";
 import mongoose from "mongoose";
 import { authRouter } from "./routes/auth.js";
 import { profileRouter } from "./routes/profile.js";
 import { requestsRouter } from "./routes/requests.js";
+import cors from "cors";
 dotenv.config();
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 // app.use(cookieParser());
+app.use(cors({
+    origin: "*",
+    credentials: true,
+}));
 app.use(
     session({
         secret: process.env.SESSION_SECRET as string,
@@ -24,8 +29,9 @@ app.use(
             ttl: 24 * 60 * 60,
             autoRemove: 'native'
           }),
+          proxy: true,
         cookie: {
-            secure: true,
+            secure: process.env.NODE_ENV === "production",
             httpOnly: true,
             maxAge: 1000 * 60 * 60 * 24,
           },
@@ -36,7 +42,6 @@ await dbConnect();
 app.use("/", authRouter);
 app.use("/", profileRouter);
 app.use("/", requestsRouter);
-
 app.get("/", (req, res) => {
     res.send("Hello World");
 });

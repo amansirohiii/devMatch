@@ -1,10 +1,14 @@
 import express, { Request, Response } from "express";
-import { validateSignUpData } from "../utils/validation";
+import { validateSignUpData } from "../utils/validation.js";
 import bcrypt from "bcrypt";
-import { checkAuthenticated } from "../middlewares/auth";
-import User from "../models/user";
+import { checkAuthenticated } from "../middlewares/auth.js";
+import User from "../models/user.js";
 import { AuthenticatedRequest } from "../types/request";
+import MongoStore from "connect-mongo";
+import mongoose from "mongoose";
 export const authRouter = express.Router();
+
+
 authRouter.post("/signup", async (req: Request, res: Response) => {
   const { firstName, lastName, email, password, age, gender } = req.body;
   try {
