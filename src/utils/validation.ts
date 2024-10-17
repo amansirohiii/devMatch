@@ -1,5 +1,6 @@
+import { Request } from "express";
 import validator from "validator";
-export const validateSignUpData = (req)=>{
+export const validateSignUpData = (req: Request)=>{
   const {firstName, lastName, email, password} = req.body;
   if (!firstName || !lastName) {
     throw new Error("Name is not valid!");

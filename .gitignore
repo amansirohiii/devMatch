@@ -1,3 +1,5 @@
+nodemon.json
+build/
 # Logs
 logs
 *.log

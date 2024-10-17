@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import validator from "validator";
+import bcrypt from "bcrypt";
 
 const userSchema = new mongoose.Schema({
   firstName: {
@@ -17,7 +18,7 @@ const userSchema = new mongoose.Schema({
     unique: true,
     lowercase: true,
     trim: true,
-    validate(value){
+    validate(value: string){
       if(!validator.isEmail(value)){
         throw new Error("Invalid email address: " + value);
       }
@@ -26,7 +27,7 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: [true, "Please provide a password"],
-    validate(value){
+    validate(value: string){
       if(!validator.isStrongPassword(value)){
         throw new Error("Enter a strong Password: ");
       }
@@ -48,7 +49,7 @@ const userSchema = new mongoose.Schema({
   photoUrl: {
     type: String,
     default: "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y",
-    validate(value) {
+    validate(value: string) {
       if (!validator.isURL(value)) {
         throw new Error("Invalid Photo URL: " + value);
       }
@@ -63,6 +64,14 @@ const userSchema = new mongoose.Schema({
     default: [],
   },
 }, {timestamps: true})
+
+userSchema.methods.validatePassword = async function(passwordInput: string){
+  const user = this;
+  const passwordHash = user.password;
+
+  const isPasswordValid = await bcrypt.compare(passwordInput, passwordHash);
+  return isPasswordValid;
+}
 
 const UserModel= mongoose.models.User || mongoose.model("User", userSchema);
 export default UserModel;

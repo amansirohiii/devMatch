@@ -1,6 +1,9 @@
 import mongoose from "mongoose";
 
-const connection = {};
+interface ConnectionType {
+  isConnected?: number;
+}
+const connection: ConnectionType = {};
 export const dbConnect = async ()=>{
   if (connection.isConnected){
     console.log("Using existing connection");

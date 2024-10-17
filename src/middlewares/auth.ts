@@ -1,6 +1,8 @@
+import { NextFunction, Request, Response } from "express";
 import User from "../models/user.js";
+import { AuthenticatedRequest } from "../types/request.js";
 
-export const userAuth = async (req, res, next) => {
+export const userAuth = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   try {
     // Check if session contains userId
     if (!req.session.userId) {
@@ -21,7 +23,7 @@ export const userAuth = async (req, res, next) => {
   }
 };
 
-export const checkAuthenticated = (req, res, next) => {
+export const checkAuthenticated = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   if (req.session.userId) {
     // Redirect to profile if user is already logged in
     return res.redirect("/profile");
