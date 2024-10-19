@@ -40,7 +40,7 @@ app.use(
 await dbConnect();
 
 app.use("/", authRouter);
-app.use("/", profileRouter);
+app.use("/profile", profileRouter);
 app.use("/", requestsRouter);
 app.get("/", (req, res) => {
     res.send("Hello World");
