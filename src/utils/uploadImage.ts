@@ -1,11 +1,16 @@
 import multer from 'multer';
-import AWS from 'aws-sdk';
 import fs from 'fs';
+import dotenv from 'dotenv';
+import { Upload } from '@aws-sdk/lib-storage';
+import { S3 } from '@aws-sdk/client-s3';
+dotenv.config();
 
-const s3 = new AWS.S3({
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  region: process.env.AWS_REGION,
+const client = new S3({
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  },
+      region: process.env.AWS_REGION,
 });
 
 export const upload = multer({
@@ -15,30 +20,30 @@ export const upload = multer({
   },
 });
 
-export const uploadImage = ({file, user}: any): Promise<any> =>{
-  return new Promise((resolve, reject) => {
+export const uploadImage = async({file, user}: any) =>{
 
   try {
     const fileContent = fs.readFileSync(file.path);
 
     const params = {
-      Bucket: process.env.S3_BUCKET_NAME + "/devmatch",
-      Key: user._id + "/" + file.originalname,
+      Bucket: process.env.S3_BUCKET_NAME,
+      Key: "devmatch/" + user._id + "/" + file.originalname,
       Body: fileContent,
     };
+    return await new Upload({
+      client,
+      params,
+    }).done();
 
-    s3.upload(params, (err: Error, data: any) => {
-      if (err) {
-        console.error(err);
-        return reject(new Error('Error uploading file'));
-      }
-      fs.unlinkSync(file.path);
-      resolve(data);
-    });
+
   } catch (error) {
     console.error(error);
-    reject(new Error('Error uploading file'));
-
+    throw new Error('Error uploading file');
+  }finally{
+    fs.unlinkSync(file.path);
   }
-  });
+
 };
+
+
+
