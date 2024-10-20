@@ -4,9 +4,10 @@ import { checkAuthenticated } from "../middlewares/auth.js";
 import User from "../models/user.js";
 import { AuthenticatedRequest } from "../types/request";
 import { hashPassword } from "../utils/hashPassword.js";
+import { upload, uploadImage } from "../utils/uploadImage.js";
 export const authRouter = express.Router();
 
-authRouter.post("/signup", async (req: Request, res: Response) => {
+authRouter.post("/signup", upload.single("image"), async (req: Request, res: Response) => {
   const { firstName, lastName, email, password, age, gender } = req.body;
   try {
       validateSignUpData(req);
@@ -20,6 +21,11 @@ authRouter.post("/signup", async (req: Request, res: Response) => {
           age,
           gender,
       });
+      await user.save();
+      if(req.file){
+        const fileUrl = await uploadImage({file: req.file, user: user});
+        user.photoUrl = fileUrl.Location;
+      }
       await user.save();
       res.send("signup successful");
   } catch (error) {
