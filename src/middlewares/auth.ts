@@ -19,7 +19,7 @@ export const userAuth = async (req: AuthenticatedRequest, res: Response, next: N
     req.user = user;
     next();
   } catch (error) {
-    res.status(401).send("ERROR: " + error.message);
+    res.status(401).json({message: "ERROR: " + error.message});
   }
 };
 

@@ -27,10 +27,10 @@ authRouter.post("/signup", upload.single("image"), async (req: Request, res: Res
         user.photoUrl = fileUrl.Location;
       }
       await user.save();
-      res.send("signup successful");
+      res.status(200).json({message: "signup successful"});
   } catch (error) {
       console.error(error);
-      res.status(400).send("Error: " + error.message);
+      res.status(400).json({message: "Error: " + error.message});
   }
 });
 
@@ -50,23 +50,23 @@ authRouter.post("/login",checkAuthenticated, async (req: AuthenticatedRequest, r
           //     expires: new Date(Date.now() + 8 * 3600000),
           //   });
           req.session.userId = user._id;
-          res.send("Login Successful");
+          res.status(200).json({message: "Login Successful"});
       } else {
           throw new Error("Invalid Credentials");
       }
   } catch (error) {
       console.log(error);
-      res.status(400).send("ERROR: " + error.message);
+      res.status(400).json({message: "ERROR: " + error.message});
   }
 });
 
 authRouter.get("/logout", async(req,res)=>{
   req.session.destroy((err) => {
       if (err) {
-          return res.status(500).send("Failed to logout");
+          return res.status(500).json({message: "Failed to logout"});
         }
         res.clearCookie("connect.sid");
-        res.send("Logout Successful");
+        res.status(200).json({message: "Logout Successful"});
   });
 
 })

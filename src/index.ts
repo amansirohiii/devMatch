@@ -42,7 +42,7 @@ app.use("/", authRouter);
 app.use("/profile", profileRouter);
 app.use("/", requestsRouter);
 app.get("/", (req, res) => {
-    res.send("Hello World");
+    res.json({message: "Hello World"});
 });
 
 
@@ -52,7 +52,7 @@ app.get("/feed", async (req, res) => {
         res.json(data);
     } catch (error) {
         console.error(error);
-        res.status(400).send("signup failed");
+        res.status(400).json({message: "Error: " + error.message});
     }
 });
 const port = process.env.PORT || 3000;

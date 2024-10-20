@@ -63,6 +63,10 @@ const userSchema = new mongoose.Schema({
     type: [String],
     default: [],
   },
+  connections: {
+    type: [mongoose.Schema.Types.ObjectId],
+    default: [],
+  },
 }, {timestamps: true})
 
 userSchema.methods.validatePassword = async function(passwordInput: string){
@@ -73,5 +77,5 @@ userSchema.methods.validatePassword = async function(passwordInput: string){
   return isPasswordValid;
 }
 
-const UserModel= mongoose.models.User || mongoose.model("User", userSchema);
-export default UserModel;
+const User= mongoose.models.User || mongoose.model("User", userSchema);
+export default User;

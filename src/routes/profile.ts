@@ -10,10 +10,10 @@ export const profileRouter = express.Router();
 profileRouter.get("/", userAuth, async (req: AuthenticatedRequest, res: Response) => {
   try {
       const user = req.user;
-      res.send(user);
+      res.json(user);
   } catch (error) {
       console.error(error);
-      res.status(400).send("ERROR: " + error.message);
+      res.status(400).json({message: "ERROR: " + error.message});
   }
 });
 
@@ -40,7 +40,7 @@ profileRouter.patch("/", userAuth, upload.single("image"), async (req: Authentic
 
   } catch (error) {
     console.error(error);
-    res.status(400).send("ERROR: " + error.message);
+    res.status(400).json({message: "ERROR: " + error.message});
   }
 });
 
