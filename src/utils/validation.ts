@@ -15,7 +15,7 @@ export const validateEditProfileData = (req: Request)=>{
   const allowedEdits = ["firstName", "lastName", "password", "age", "photoUrl", "about", "skills"];
 
   const isEditAllowed = Object.keys(req.body).every((edit) => allowedEdits.includes(edit));
-  
+
   if (!isEditAllowed) {
     throw new Error("Invalid Edit");
   }

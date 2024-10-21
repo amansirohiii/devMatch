@@ -11,7 +11,8 @@ authRouter.post("/signup", upload.single("image"), async (req: Request, res: Res
   const { firstName, lastName, email, password, age, gender } = req.body;
   try {
       validateSignUpData(req);
-      const hashedPassword = hashPassword(password);
+      
+      const hashedPassword = await hashPassword(password);
 
       const user = new User({
           firstName,

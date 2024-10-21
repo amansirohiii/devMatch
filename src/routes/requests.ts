@@ -1,4 +1,4 @@
-import express, { Request, Response } from "express";
+import express, { Response } from "express";
 import { userAuth } from "../middlewares/auth.js";
 import { AuthenticatedRequest } from "../types/request.js";
 import User from "../models/user.js";
@@ -6,17 +6,17 @@ import ConnectionRequest from "../models/connectionRequest.js";
 
 export const requestsRouter = express.Router();
 
-requestsRouter.post("/:status/:toUserId", userAuth,
+requestsRouter.post("/send/:sendStatus/:toUserId", userAuth,
     async (req: AuthenticatedRequest, res: Response): Promise<any> => {
         try {
           const fromUserId = req.session.userId;
             const toUserId = req.params.toUserId;
-            const status = req.params.status;
+            const status = req.params.sendStatus;
 
             // Check if the status is valid
           const allowedStatus = ["ignored", "interested"];
           if(!allowedStatus.includes(status)){
-            return res.status(400).json({message: "Invalid status" + status});
+            return res.status(400).json({message: "Invalid status"});
           }
                     if (fromUserId === toUserId) {
             throw new Error("You cannot send a connection request to yourself");
@@ -53,3 +53,31 @@ requestsRouter.post("/:status/:toUserId", userAuth,
         }
     }
 );
+
+
+requestsRouter.post("/review/:reviewStatus/:requestId", userAuth, async(req: AuthenticatedRequest, res: Response): Promise<any> => {
+  try {
+    const requestId = req.params.requestId;
+    const reviewStatus = req.params.reviewStatus;
+    const userId = req.session.userId;
+    const allowedStatus = ["accepted", "rejected"];
+    if(!allowedStatus.includes(reviewStatus)){
+      return res.status(400).json({message: "Invalid status"});
+    }
+    const connectionRequest = await ConnectionRequest.findOne({_id: requestId, toUserId: userId, status: "interested"});
+    if(!connectionRequest){
+      return res.status(400).json({message: "Connection request not found"});
+    }
+
+    if(connectionRequest.status !== "interested"){
+      return res.status(400).json({message: "You cannot review this request/ Already Reviewed"});
+    }
+    connectionRequest.status = reviewStatus;
+    await connectionRequest.save();
+    res.status(200).json({message: "Request reviewed successfully", data: connectionRequest});
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({message: "ERROR: " + error.message});
+  }
+
+});
