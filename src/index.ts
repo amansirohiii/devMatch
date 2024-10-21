@@ -8,6 +8,7 @@ import { authRouter } from "./routes/auth.js";
 import { profileRouter } from "./routes/profile.js";
 import { requestsRouter } from "./routes/requests.js";
 import cors from "cors";
+import { userRouter } from "./routes/user.js";
 dotenv.config();
 const app = express();
 app.use(express.json());
@@ -41,6 +42,7 @@ await dbConnect();
 app.use("/", authRouter);
 app.use("/profile", profileRouter);
 app.use("/", requestsRouter);
+app.use("/", userRouter);
 app.get("/", (req, res) => {
     res.json({message: "Hello World"});
 });

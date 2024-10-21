@@ -10,7 +10,10 @@ export const profileRouter = express.Router();
 profileRouter.get("/", userAuth, async (req: AuthenticatedRequest, res: Response) => {
   try {
       const user = req.user;
-      res.json(user);
+      const filteredUser = Object.fromEntries(
+        Object.entries(user._doc).filter(([key]) => ['firstName', 'lastName', "photoUrl", "age", "gender", "about", "skills"].includes(key))
+      );
+      res.json(filteredUser);
   } catch (error) {
       console.error(error);
       res.status(400).json({message: "ERROR: " + error.message});

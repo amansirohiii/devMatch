@@ -6,5 +6,5 @@ export interface AuthenticatedRequest extends Request {
   session: Session & {
     userId?: string;
   };
-  user?: typeof User;
+  user?:  InstanceType<typeof User>;
 }
