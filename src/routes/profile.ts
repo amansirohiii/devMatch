@@ -11,7 +11,7 @@ profileRouter.get("/", userAuth, async (req: AuthenticatedRequest, res: Response
   try {
       const user = req.user;
       const filteredUser = Object.fromEntries(
-        Object.entries(user._doc).filter(([key]) => ['firstName', 'lastName', "photoUrl", "age", "gender", "about", "skills"].includes(key))
+        Object.entries(user._doc).filter(([key]) => ['firstName', 'lastName', "photoUrl", "age", "gender", "about", "skills", "location"].includes(key))
       );
       res.json(filteredUser);
   } catch (error) {

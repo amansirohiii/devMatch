@@ -24,8 +24,8 @@ authRouter.post("/signup", upload.single("image"), async (req: Request, res: Res
           location: location ? {
             type: "Point",
             coordinates: [
-                parseFloat(location.coordinates[0]),
-                parseFloat(location.coordinates[1])
+                parseFloat(location.longitude),
+                parseFloat(location.latitude)
             ]
         } : undefined
     });
@@ -63,10 +63,9 @@ authRouter.post("/login", checkAuthenticated, async (req: AuthenticatedRequest, 
                       parseFloat(location.latitude)
                   ]
               };
+              req.session.location = user.location;
               await user.save();
           }
-
-          req.session.location = user.location;
 
           res.status(200).json({ message: "Login Successful" });
       } else {
