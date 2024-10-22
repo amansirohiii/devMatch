@@ -5,6 +5,14 @@ import { Request } from "express";
 export interface AuthenticatedRequest extends Request {
   session: Session & {
     userId?: string;
+    location?: {
+
+      type: string;
+
+      coordinates: [number, number];
+
+    };
   };
   user?:  InstanceType<typeof User>;
+
 }

@@ -63,10 +63,19 @@ const userSchema = new mongoose.Schema({
     type: [String],
     default: [],
   },
-  connections: {
-    type: [mongoose.Schema.Types.ObjectId],
-    default: [],
+location: {
+  type: {
+    type: String,
+    enum: ['Point', 'LineString', 'Polygon'],
+    default: undefined,
   },
+  coordinates: {
+    type: [Number],
+    default: undefined,
+  }
+}
+
+
 }, {timestamps: true})
 
 userSchema.methods.validatePassword = async function(passwordInput: string){
@@ -76,6 +85,9 @@ userSchema.methods.validatePassword = async function(passwordInput: string){
   const isPasswordValid = await bcrypt.compare(passwordInput, passwordHash);
   return isPasswordValid;
 }
+
+userSchema.index({ location: "2dsphere" });
+
 
 const User= mongoose.models.User || mongoose.model("User", userSchema);
 export default User;
