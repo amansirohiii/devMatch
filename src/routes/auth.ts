@@ -9,12 +9,11 @@ import { filterUser } from "../utils/filterUser.js";
 export const authRouter = express.Router();
 
 authRouter.post("/signup", upload.single("image"), async (req: Request, res: Response) => {
-  const { firstName, lastName, email, password, age, gender, location } = req.body;
+  const { firstName, lastName, email, password, age, gender, about, skills, location } = req.body;
   try {
-            validateSignUpData(req);
+    validateSignUpData(req);
 
       const hashedPassword = await hashPassword(password);
-
       const user = new User({
           firstName,
           lastName,
@@ -22,23 +21,24 @@ authRouter.post("/signup", upload.single("image"), async (req: Request, res: Res
           password: hashedPassword,
           age,
           gender,
+          about,
+            skills,
           location: location ? {
             type: "Point",
             coordinates: [
-                parseFloat(location.longitude),
-                parseFloat(location.latitude)
+                (location.coordinates[0]),
+                (location.coordinates[1])
             ]
         } : undefined
     });
       await user.save();
-
       if (req.file) {
           const fileUrl = await uploadImage({ file: req.file, user });
           user.photoUrl = fileUrl.Location;
       }
-      await user.save();
-
-      res.status(200).json({ message: "Signup successful" });
+      const savedUser = await user.save();
+      console.log(savedUser);
+      res.status(200).json({ message: "Signup successful", data: filterUser(savedUser) });
   } catch (error) {
       console.error(error);
       res.status(400).json({ message: "Error: " + error.message });

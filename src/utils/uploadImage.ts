@@ -24,7 +24,6 @@ export const uploadImage = async({file, user}: any) =>{
 
   try {
     const fileContent = fs.readFileSync(file.path);
-
     const params = {
       Bucket: process.env.S3_BUCKET_NAME,
       Key: "devmatch/" + user._id + "/" + file.originalname,

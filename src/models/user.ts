@@ -67,11 +67,9 @@ location: {
   type: {
     type: String,
     enum: ['Point', 'LineString', 'Polygon'],
-    default: undefined,
   },
   coordinates: {
     type: [Number],
-    default: undefined,
   }
 }
 
