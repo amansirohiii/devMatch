@@ -14,5 +14,6 @@ export interface AuthenticatedRequest extends Request {
     };
   };
   user?:  InstanceType<typeof User>;
+  filteredUser?: InstanceType<typeof User>;
 
 }

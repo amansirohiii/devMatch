@@ -1,10 +1,11 @@
 import express, { Request, Response } from "express";
 import { validateSignUpData } from "../utils/validation.js";
-import { checkAuthenticated } from "../middlewares/auth.js";
 import User from "../models/user.js";
 import { AuthenticatedRequest } from "../types/request";
 import { hashPassword } from "../utils/hashPassword.js";
 import { upload, uploadImage } from "../utils/uploadImage.js";
+import { checkAuth, userAuth } from "../middlewares/auth.js";
+import { filterUser } from "../utils/filterUser.js";
 export const authRouter = express.Router();
 
 authRouter.post("/signup", upload.single("image"), async (req: Request, res: Response) => {
@@ -44,8 +45,13 @@ authRouter.post("/signup", upload.single("image"), async (req: Request, res: Res
   }
 });
 
-authRouter.post("/login", checkAuthenticated, async (req: AuthenticatedRequest, res: Response) => {
+authRouter.post("/login", async (req: AuthenticatedRequest, res: Response) => {
   try {
+    if(req.user){
+        const filteredUser = filterUser(req.user);
+        res.status(200).json({ message: "Already Logged In", data: filteredUser });
+        return;
+    }
       const { email, password, location } = req.body;
       const user = await User.findOne({ email });
       if (!user) {
@@ -66,8 +72,8 @@ authRouter.post("/login", checkAuthenticated, async (req: AuthenticatedRequest, 
               req.session.location = user.location;
               await user.save();
           }
-
-          res.status(200).json({ message: "Login Successful" });
+          const filteredUser = filterUser(user);
+          res.status(200).json({ message: "Login Successful", data: filteredUser });
       } else {
           throw new Error("Invalid Credentials");
       }
@@ -88,3 +94,12 @@ authRouter.get("/logout", async(req,res)=>{
   });
 
 })
+
+authRouter.get("/check-auth", checkAuth, async (req: AuthenticatedRequest, res: Response) => {
+    if (req.user) {
+        const filteredUser = filterUser(req.user);
+
+        res.status(200).json({ message: "Authenticated", data: filteredUser });
+      }else{
+      res.status(400).json({ message: "Not Authenticated" });}
+});
