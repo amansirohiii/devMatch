@@ -4,15 +4,14 @@ import { AuthenticatedRequest } from "../types/request";
 import { validateEditProfileData } from "../utils/validation.js";
 import { hashPassword } from "../utils/hashPassword.js";
 import { upload, uploadImage } from "../utils/uploadImage.js";
+import { filterUser } from "../utils/filterUser.js";
 
 export const profileRouter = express.Router();
 
 profileRouter.get("/", userAuth, async (req: AuthenticatedRequest, res: Response) => {
   try {
       const user = req.user;
-      const filteredUser = Object.fromEntries(
-        Object.entries(user._doc).filter(([key]) => ['firstName', 'lastName', "photoUrl", "age", "gender", "about", "skills", "location"].includes(key))
-      );
+      const filteredUser = filterUser(user);
       res.json(filteredUser);
   } catch (error) {
       console.error(error);

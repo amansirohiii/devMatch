@@ -37,7 +37,6 @@ authRouter.post("/signup", upload.single("image"), async (req: Request, res: Res
           user.photoUrl = fileUrl.Location;
       }
       const savedUser = await user.save();
-      console.log(savedUser);
       res.status(200).json({ message: "Signup successful", data: filterUser(savedUser) });
   } catch (error) {
       console.error(error);

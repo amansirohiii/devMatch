@@ -8,6 +8,10 @@ export const validateSignUpData = (req: Request)=>{
     throw new Error("Email is not valid!");
   } else if (!validator.isStrongPassword(password)) {
     throw new Error("Please enter a strong Password!");
+  } else if (!req.file) {
+    throw new Error("Please upload a photo!");
+  } else if (!req.body.age || !validator.isInt(req.body.age) || req.body.age < 13) {
+    throw new Error("Age is not valid");
   }
 };
 
