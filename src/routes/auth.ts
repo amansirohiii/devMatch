@@ -31,12 +31,12 @@ authRouter.post("/signup", upload.single("image"), async (req: Request, res: Res
             ]
         } : undefined
     });
-      await user.save();
+     let savedUser =  await user.save();
       if (req.file) {
           const fileUrl = await uploadImage({ file: req.file, user });
           user.photoUrl = fileUrl.Location;
+          savedUser = await user.save();
       }
-      const savedUser = await user.save();
       res.status(200).json({ message: "Signup successful", data: filterUser(savedUser) });
   } catch (error) {
       console.error(error);

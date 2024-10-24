@@ -3,7 +3,6 @@ import { userAuth } from "../middlewares/auth.js";
 import { AuthenticatedRequest } from "../types/request.js";
 import ConnectionRequest from "../models/connectionRequest.js";
 import User from "../models/user.js";
-import { Agent } from "http";
 export const userRouter = express.Router();
 
 const USER_SAFE_DATA = "firstName lastName photoUrl age gender about skills";

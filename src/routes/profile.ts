@@ -35,9 +35,10 @@ profileRouter.patch("/", userAuth, upload.single("image"), async (req: Authentic
     const currentUser = req.user as { [key: string]: any };
     Object.keys(req.body).forEach((key) => (currentUser[key] = req.body[key]));
     await currentUser.save();
+    const filteredUser = filterUser(currentUser);
     res.status(200).json({
       message: `${currentUser.firstName}, your profile updated successfully`,
-      data: currentUser,
+      data: filteredUser,
     });
 
   } catch (error) {
