@@ -3,6 +3,7 @@ import { userAuth } from "../middlewares/auth.js";
 import { AuthenticatedRequest } from "../types/request.js";
 import ConnectionRequest from "../models/connectionRequest.js";
 import User from "../models/user.js";
+import mongoose from "mongoose";
 export const userRouter = express.Router();
 
 const USER_SAFE_DATA = "firstName lastName email photoUrl age gender about skills";
@@ -103,10 +104,10 @@ userRouter.get(
                 $or: [{ fromUserId: user._id }, { toUserId: user._id }],
             }).select("fromUserId toUserId status");
 
-            const hideUserFromFeed = new Set();
+            const hideUsersFromFeed = new Set();
             connectionRequests.forEach((req) => {
-                hideUserFromFeed.add(req.fromUserId.toString());
-                hideUserFromFeed.add(req.toUserId.toString());
+                hideUsersFromFeed.add(req.fromUserId.toString());
+                hideUsersFromFeed.add(req.toUserId.toString());
             });
 
             let users;
@@ -121,7 +122,10 @@ userRouter.get(
                             distanceField: "distance",
                             spherical: true,
                             query: {
-                                _id: { $nin: [...hideUserFromFeed, user._id] },
+                                $and: [
+                                    { _id: { $nin: Array.from(hideUsersFromFeed).map(_id => new mongoose.Types.ObjectId(_id as string)) } },
+                                    { _id: { $ne: user._id } },
+                                  ],
                             },
                         },
                     },
@@ -149,11 +153,13 @@ userRouter.get(
                 ]);
             } else {
                 users = await User.find({
-                    _id: { $nin: [...hideUserFromFeed, user._id] },
-                }).select(USER_SAFE_DATA);
+                    $and: [
+                        { _id: { $nin: Array.from(hideUsersFromFeed).map(_id => new mongoose.Types.ObjectId(_id as string)) } },
+                        { _id: { $ne: user._id } },
+                      ],               }).select(USER_SAFE_DATA);
             }
             const totalUsers = await User.countDocuments({
-                _id: { $nin: [...hideUserFromFeed, user._id] },
+                _id: { $nin: [...hideUsersFromFeed, user._id] },
             });
             res.status(200).json({
                 message: "Success",
