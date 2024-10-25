@@ -12,7 +12,9 @@ requestsRouter.post("/send/:sendStatus/:toUserId", userAuth,
           const fromUserId = req.session.userId;
             const toUserId = req.params.toUserId;
             const status = req.params.sendStatus;
-
+if(!fromUserId || !toUserId || !status){
+  return res.status(400).json({message: "Missing required fields"});
+}
             // Check if the status is valid
           const allowedStatus = ["ignored", "interested"];
           if(!allowedStatus.includes(status)){
@@ -30,19 +32,14 @@ requestsRouter.post("/send/:sendStatus/:toUserId", userAuth,
 
           // Check if the connection request exists
           const existingConnectionRequest = await ConnectionRequest.findOne({
-            $or:[
-              {fromUserId, toUserId},
-              {fromUserId: toUserId, toUserId: fromUserId}
-            ]
+            $or: [
+              { fromUserId, toUserId },
+              { fromUserId: toUserId, toUserId: fromUserId },
+            ],
           });
           if(existingConnectionRequest){
-            return res.status(400).json({message: "Connection request already exists"});
+            return res.status(400).json({message: "Connection request already exists "});
           }
-
-
-            if (fromUser.connections.includes(toUserId) || toUser.connections.includes(fromUserId)) {
-                throw new Error("You are already connected with this user");
-            }
 
             const data = await ConnectionRequest.create({ fromUserId, toUserId, status });
             res.status(200).json({ message: toUser.firstName + " " + status , data});

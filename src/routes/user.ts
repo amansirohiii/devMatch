@@ -5,7 +5,7 @@ import ConnectionRequest from "../models/connectionRequest.js";
 import User from "../models/user.js";
 export const userRouter = express.Router();
 
-const USER_SAFE_DATA = "firstName lastName photoUrl age gender about skills";
+const USER_SAFE_DATA = "firstName lastName email photoUrl age gender about skills";
 
 userRouter.get(
     "/requests",
