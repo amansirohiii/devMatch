@@ -45,23 +45,23 @@ if(!fromUserId || !toUserId || !status){
           }
 
             const data = await ConnectionRequest.create({ fromUserId, toUserId, status });
+          res.status(200).json({ message: `${toUser.firstName} ${status}`, data });
+
             const populatedData = await ConnectionRequest.find({
               toUserId,
               status: "interested",
-          }).populate("fromUserId", USER_SAFE_DATA);
-          const io = req.app.get("io");
-          const socketUser = await SocketUsers.findOne({ userId: toUserId });
+            }).populate("fromUserId", USER_SAFE_DATA).lean();
 
-          if (socketUser && socketUser.socketId) {
-            const socketId = socketUser.socketId;
+            const io = req.app.get("io");
+            const socketUser = await SocketUsers.findOne({ userId: toUserId }).lean();
 
-            // Emit 'newRequest' to the user's socket
-            io.to(socketId).emit("newRequest", populatedData);
-            console.log(`Emitted newRequest to user ${toUserId} with socket ID ${socketId}`);
-          } else {
-            console.log(`User ${toUserId} is not connected`);
-          }
-            res.status(200).json({ message: toUser.firstName + " " + status , data});
+            if (socketUser?.socketId) {
+              io.to(socketUser.socketId).emit("newRequest", populatedData);
+              console.log(`Emitted newRequest to user ${toUserId} with socket ID ${socketUser.socketId}`);
+            } else {
+              console.log(`User ${toUserId} is not connected`);
+            }
+
 
         } catch (error) {
             console.error(error);
@@ -90,6 +90,9 @@ requestsRouter.post("/review/:reviewStatus/:requestId", userAuth, async(req: Aut
     }
     connectionRequest.status = reviewStatus;
     await connectionRequest.save();
+    res.status(200).json({message: "Request reviewed successfully", data: connectionRequest});
+
+
     if(reviewStatus === "accepted"){
       const io = req.app.get("io");
     try {
@@ -108,7 +111,6 @@ requestsRouter.post("/review/:reviewStatus/:requestId", userAuth, async(req: Aut
     } catch (error) {
       console.error("Error fetching socket user:", error);
     }}
-    res.status(200).json({message: "Request reviewed successfully", data: connectionRequest});
   } catch (error) {
     console.error(error);
     res.status(400).json({message: "ERROR: " + error.message});
