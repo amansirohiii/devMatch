@@ -4,9 +4,10 @@ import { AuthenticatedRequest } from "../types/request.js";
 import ConnectionRequest from "../models/connectionRequest.js";
 import User from "../models/user.js";
 import mongoose from "mongoose";
+import { USER_SAFE_DATA } from "../utils/filterUser.js";
 export const userRouter = express.Router();
 
-const USER_SAFE_DATA = "firstName lastName email photoUrl age gender about skills";
+
 
 userRouter.get(
     "/requests",

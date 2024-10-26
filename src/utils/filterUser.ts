@@ -1,5 +1,7 @@
 export const filterUser=(user: any) => {
-  return {firstName: user.firstName,
+  return {
+    _id: user._id,
+    firstName: user.firstName,
     lastName: user.lastName,
     email: user.email,
     photoUrl: user.photoUrl,
@@ -9,3 +11,5 @@ export const filterUser=(user: any) => {
     skills: user.skills,
     location: user.location}
 };
+
+export const USER_SAFE_DATA = "_id firstName lastName email photoUrl age gender about skills";

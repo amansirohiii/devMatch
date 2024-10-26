@@ -3,8 +3,10 @@ import { userAuth } from "../middlewares/auth.js";
 import { AuthenticatedRequest } from "../types/request.js";
 import User from "../models/user.js";
 import ConnectionRequest from "../models/connectionRequest.js";
-
+import { USER_SAFE_DATA } from "../utils/filterUser.js";
+import SocketUsers from "../models/socketUsers.js";
 export const requestsRouter = express.Router();
+
 
 requestsRouter.post("/send/:sendStatus/:toUserId", userAuth,
     async (req: AuthenticatedRequest, res: Response): Promise<any> => {
@@ -12,6 +14,7 @@ requestsRouter.post("/send/:sendStatus/:toUserId", userAuth,
           const fromUserId = req.session.userId;
             const toUserId = req.params.toUserId;
             const status = req.params.sendStatus;
+
 if(!fromUserId || !toUserId || !status){
   return res.status(400).json({message: "Missing required fields"});
 }
@@ -42,6 +45,22 @@ if(!fromUserId || !toUserId || !status){
           }
 
             const data = await ConnectionRequest.create({ fromUserId, toUserId, status });
+            const populatedData = await ConnectionRequest.find({
+              toUserId,
+              status: "interested",
+          }).populate("fromUserId", USER_SAFE_DATA);
+          const io = req.app.get("io");
+          const socketUser = await SocketUsers.findOne({ userId: toUserId });
+
+          if (socketUser && socketUser.socketId) {
+            const socketId = socketUser.socketId;
+
+            // Emit 'newRequest' to the user's socket
+            io.to(socketId).emit("newRequest", populatedData);
+            console.log(`Emitted newRequest to user ${toUserId} with socket ID ${socketId}`);
+          } else {
+            console.log(`User ${toUserId} is not connected`);
+          }
             res.status(200).json({ message: toUser.firstName + " " + status , data});
 
         } catch (error) {
@@ -71,6 +90,24 @@ requestsRouter.post("/review/:reviewStatus/:requestId", userAuth, async(req: Aut
     }
     connectionRequest.status = reviewStatus;
     await connectionRequest.save();
+    if(reviewStatus === "accepted"){
+      const io = req.app.get("io");
+    try {
+      // Fetch the user's socket ID from the database using their userId
+      const socketUser = await SocketUsers.findOne({ userId: connectionRequest.fromUserId });
+
+      if (socketUser && socketUser.socketId) {
+        const socketId = socketUser.socketId;
+        const userId = connectionRequest.fromUserId;
+        // Emit the event to the specific socketId
+        io.to(socketId).emit("newConnection", connectionRequest);
+        console.log(`Emitted newConnection to user ${userId} with socket ID ${socketId}`);
+      } else {
+        console.log(`User ${userId} is not connected`);
+      }
+    } catch (error) {
+      console.error("Error fetching socket user:", error);
+    }}
     res.status(200).json({message: "Request reviewed successfully", data: connectionRequest});
   } catch (error) {
     console.error(error);
