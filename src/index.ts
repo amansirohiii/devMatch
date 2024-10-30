@@ -18,7 +18,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: [process.env.NODE_ENV === "production" ? "https://dev-match-web.vercel.app" : "http://localhost:5173"], // Replace with your frontend URL
+    origin: [process.env.NODE_ENV === "production" ? "https://devmatch.amansirohi.online" : "http://localhost:5173"], // Replace with your frontend URL
     methods: ["GET", "POST"],
     credentials: true,
   },
@@ -69,7 +69,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 // app.use(cookieParser());
 app.use(cors({
-    origin: [process.env.NODE_ENV === "production" ? "https://dev-match-web.vercel.app" : "http://localhost:5173"],
+    origin: [process.env.NODE_ENV === "production" ? "https://devmatch.amansirohi.online" : "http://localhost:5173"],
     credentials: true,
 }));
 app.use(
